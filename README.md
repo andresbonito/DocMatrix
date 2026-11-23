@@ -1,11 +1,52 @@
 # DocMatrix v1.1.0
 
+**Repositório oficial:** [andresbonito/DocMatrix](https://github.com/andresbonito/DocMatrix)
+
 **Skill universal de análise documental com exportação de Excel e JSON**, preparada para Claude Code, Codex e agentes compatíveis com o padrão Agent Skills. O DocMatrix separa extração determinística em Python da interpretação semântica feita pelo agente. Não há especialização obrigatória por área.
 
 > **MVP:** a Skill instrui o agente a analisar documentos e entregar uma resposta interpretativa mais dois arquivos: `docmatrix_resultado.xlsx` e `docmatrix_resultado.json`. O uso implícito depende das regras de descoberta e permissão do Claude Code/Codex. A CLI Python não chama um modelo de IA sozinha.
 
+## Instalação rápida pelo GitHub
+
+O modo recomendado é instalar diretamente do **[repositório DocMatrix](https://github.com/andresbonito/DocMatrix)** com a CLI [Skills](https://github.com/vercel-labs/skills), sem baixar ZIP ou copiar pastas manualmente. É necessário **Node.js 22.20+** (com `npx`) para este método; as rotinas de análise também exigem **Python 3.10+**.
+
+**Claude Code — instalação global:**
+
+```bash
+npx skills add https://github.com/andresbonito/DocMatrix --skill docmatrix -g -a claude-code -y
+```
+
+**Codex — instalação global:**
+
+```bash
+npx skills add https://github.com/andresbonito/DocMatrix --skill docmatrix -g -a codex -y
+```
+
+**Claude Code e Codex — instalar nos dois simultaneamente:**
+
+```bash
+npx skills add https://github.com/andresbonito/DocMatrix --skill docmatrix -g -a claude-code -a codex -y
+```
+
+`-g` disponibiliza a Skill globalmente; **remova `-g`** para instalar apenas no projeto atual. O parâmetro `-y` dispensa perguntas de confirmação. No Windows PowerShell, se `npx` estiver bloqueado pela política de execução, experimente `npx.cmd` nos mesmos comandos. Para conferir se a Skill foi detectada antes de instalar:
+
+```bash
+npx skills add https://github.com/andresbonito/DocMatrix --list
+```
+
+**Importante:** a CLI instala os arquivos da Skill, **não as dependências Python**. Após instalar, siga a [seção 2](#2-pré-requisitos-e-instalação-de-bibliotecas) no diretório instalado; depois, reinicie o agente e faça o teste das seções 3 ou 4. Para revisar instalações e atualizações:
+
+```bash
+npx skills ls -g
+npx skills check
+npx skills update docmatrix -g
+```
+
+A atualização com `npx skills update` exige uma instalação gerenciada pela CLI Skills. Cópias feitas anteriormente pelo `install.py` não são rastreadas por esse comando. O instalador local continua disponível como alternativa sem Node.js.
+
 ## Índice
 
+- [Instalação rápida pelo GitHub](#instalação-rápida-pelo-github)
 1. [O que faz](#1-o-que-faz)
 2. [Pré-requisitos e instalação de bibliotecas](#2-pré-requisitos-e-instalação-de-bibliotecas)
 3. [Instalar no Claude Code](#3-instalar-no-claude-code)
@@ -42,12 +83,12 @@ O DocMatrix combina cinco modos reutilizáveis em um único núcleo:
 - **XlsxWriter** para gerar Excel em Python convencional; `artifact_tool` é opcional, apenas em ambientes que já o fornecem.
 - **PyMuPDF** (principal) ou **pypdf** para PDF com texto nativo. PDFs digitalizados ainda não usam OCR automático.
 
-Instale as dependências do pacote dentro de um ambiente virtual, preferencialmente na pasta `docmatrix`.
+Instale as dependências dentro de um ambiente virtual na pasta em que a Skill foi **efetivamente instalada** (ou na raiz do clone `DocMatrix`, se estiver executando apenas a CLI Python). Essa pasta contém `SKILL.md` e `requirements.txt`. Se utilizou `npx skills add`, consulte `npx skills ls -g` e localize a instalação de `docmatrix`; o cliente pode usar links simbólicos para compartilhar uma única cópia.
 
 ### Windows — PowerShell
 
 ```powershell
-cd .\docmatrix
+# Execute na pasta instalada, que contém SKILL.md e requirements.txt
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -59,7 +100,7 @@ Se o Python não estiver registrado como `py`, use `python -m venv .venv` na pri
 ### Linux ou macOS — Terminal
 
 ```bash
-cd docmatrix
+# Execute na pasta instalada, que contém SKILL.md e requirements.txt
 python3 -m venv .venv
 ./.venv/bin/python -m pip install --upgrade pip
 ./.venv/bin/python -m pip install -r requirements.txt
@@ -68,7 +109,7 @@ python3 -m venv .venv
 
 `requirements.txt` contém apenas bibliotecas públicas. O pacote não solicita tokens ou chaves de API para executar as rotinas determinísticas. A análise feita pelo agente usa seu ambiente e permissões próprios.
 
-**Importante para uso como Skill:** depois de copiar para o diretório definitivo do agente, instale as dependências **na pasta instalada**, criando o `.venv` lá. A Skill instrui o agente a usar o Python desse `.venv` quando existir; se você instalou só no pacote descompactado, o agente não verá necessariamente essas bibliotecas.
+**Importante para uso como Skill:** depois de instalar pelo GitHub ou copiar a pasta para o agente, instale as dependências **na pasta instalada**, criando o `.venv` lá. A Skill instrui o agente a usar o Python desse `.venv` quando existir; se você instalou só no clone ou no pacote descompactado, o agente não verá necessariamente essas bibliotecas. Uma atualização da Skill pode exigir recriar o `.venv`, caso o instalador substitua os arquivos.
 
 ## 3. Instalar no Claude Code
 
@@ -79,23 +120,33 @@ Os locais documentados pelo Claude Code são:
 | Global, para seus projetos | `~/.claude/skills/docmatrix/` |
 | Apenas um projeto | `<projeto>/.claude/skills/docmatrix/` |
 
-**Instalação automática multiplataforma** (após extrair o ZIP, no diretório onde existe a pasta `docmatrix`):
+### Instalação recomendada — GitHub + Skills CLI
 
 ```bash
-python docmatrix/install.py --host claude --scope user
+npx skills add https://github.com/andresbonito/DocMatrix --skill docmatrix -g -a claude-code -y
+```
+
+Para **instalar somente no projeto atual**, execute a partir da raiz do projeto e remova `-g`. Em seguida, instale as dependências Python conforme a seção 2.
+
+### Alternativa — Git clone + instalador Python
+
+```bash
+git clone https://github.com/andresbonito/DocMatrix.git
+cd DocMatrix
+python install.py --host claude --scope user
 ```
 
 No Windows, pode substituir `python` por `py`. Para adicionar somente a um projeto:
 
 ```bash
-python docmatrix/install.py --host claude --scope project --project "/caminho/do/projeto"
+python install.py --host claude --scope project --project "/caminho/do/projeto"
 ```
 
 O parâmetro `--force` atualiza uma instalação DocMatrix já existente. Ele substitui a pasta antiga; faça backup de alterações pessoais antes de utilizá-lo. O instalador **não** instala pacotes Python nem altera seu `CLAUDE.md`.
 
 ### Instalação manual no Windows (PowerShell)
 
-Depois de extrair o ZIP e entrar na pasta que contém `docmatrix`:
+Alternativa para quem utiliza o ZIP da Skill, no diretório que contém a pasta `docmatrix`:
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
@@ -131,16 +182,26 @@ Locais documentados para Skill por pasta:
 | Global, para seus projetos | `~/.agents/skills/docmatrix/` |
 | Apenas um projeto | `<projeto>/.agents/skills/docmatrix/` |
 
-**Instalação automática multiplataforma**, na pasta que contém `docmatrix`:
+### Instalação recomendada — GitHub + Skills CLI
 
 ```bash
-python docmatrix/install.py --host codex --scope user
+npx skills add https://github.com/andresbonito/DocMatrix --skill docmatrix -g -a codex -y
+```
+
+Para **instalar somente no projeto atual**, execute a partir da raiz do projeto e remova `-g`. Em seguida, instale as dependências Python conforme a seção 2.
+
+### Alternativa — Git clone + instalador Python
+
+```bash
+git clone https://github.com/andresbonito/DocMatrix.git
+cd DocMatrix
+python install.py --host codex --scope user
 ```
 
 Ou apenas no projeto:
 
 ```bash
-python docmatrix/install.py --host codex --scope project --project "/caminho/do/projeto"
+python install.py --host codex --scope project --project "/caminho/do/projeto"
 ```
 
 ### Instalação manual no Windows (PowerShell)
@@ -166,7 +227,7 @@ cp -R ./docmatrix "$HOME/.agents/skills/"
 3. Exemplo de pedido: `$docmatrix Analise estes relatórios e entregue Excel + JSON com evidências.`
 4. Instale as dependências no diretório da Skill caso não estejam disponíveis no Python utilizado.
 
-**Nota de compatibilidade:** versões e instaladores antigos do Codex podem utilizar `~/.codex/skills`. Esta versão segue os caminhos descritos na documentação atual (`~/.agents/skills`). Em caso de discrepância, confira a listagem de Skills do seu cliente e a documentação da versão instalada.
+**Nota de compatibilidade:** versões e instaladores antigos do Codex podem utilizar `~/.codex/skills`. Esta versão segue os caminhos descritos na documentação atual (`~/.agents/skills`). A CLI `npx skills add` seleciona os diretórios compatíveis com o agente e pode utilizar links simbólicos. Em caso de discrepância, confira a listagem de Skills do seu cliente e a documentação da versão instalada.
 
 ## 5. Como usar e como ativar automaticamente
 
@@ -311,6 +372,8 @@ python -m unittest discover -s tests -v
 
 ## 11. Documentação oficial
 
+- [Repositório DocMatrix — Código e versões](https://github.com/andresbonito/DocMatrix)
+- [Skills CLI — Instalação e atualização via GitHub](https://github.com/vercel-labs/skills)
 - [Claude Code — Skills](https://code.claude.com/docs/en/skills)
 - [OpenAI — Criar Skills para Codex e ChatGPT](https://learn.chatgpt.com/docs/build-skills)
 - [Agent Skills — Especificação](https://agentskills.io/specification)
