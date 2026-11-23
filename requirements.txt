@@ -1,0 +1,6 @@
+# Backend Excel portátil, necessário em Claude Code / Codex sem artifact_tool.
+XlsxWriter>=3.2,<4
+# Leitura de PDF digital e extração tabular básica.
+PyMuPDF>=1.24,<2
+# Alternativa de leitura para PDFs nativos caso PyMuPDF não esteja disponível.
+pypdf>=5,<7

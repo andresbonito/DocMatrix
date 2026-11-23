@@ -1,0 +1,7 @@
+interface:
+  display_name: "DocMatrix"
+  short_description: "Análise universal de documentos com Excel e JSON"
+  brand_color: "#16324F"
+  default_prompt: "Analise os documentos anexados com o DocMatrix e gere Excel e JSON com evidências."
+policy:
+  allow_implicit_invocation: true

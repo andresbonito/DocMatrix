@@ -1,0 +1,7 @@
+RELATÓRIO DE PROJETO — VERSÃO A
+Projeto: Horizonte
+Data de emissão: 12/11/2026
+Responsável: Equipe Norte
+Orçamento total: R$ 15.000,00
+Prazo final: 30/11/2026
+A equipe precisa revisar os testes de integração antes do encerramento.

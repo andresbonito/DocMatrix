@@ -1,0 +1,21 @@
+{
+  "registros": [],
+  "eventos": [],
+  "validacoes": [
+    {
+      "id": "ia_v001",
+      "tipo": "comparacao_orcamentaria",
+      "status": "atencao",
+      "criterio": "Conferência do campo único Orçamento total",
+      "metodo": "Comparar valores normalizados extraídos dos dois relatórios",
+      "descricao": "Os valores informados nas versões A e B são diferentes.",
+      "evidencias": ["doc_001:b000001", "doc_002:b000001"]
+    }
+  ],
+  "inconsistencias": [],
+  "comparativo": [],
+  "analise": {
+    "resumo": "As versões A e B contêm alteração do orçamento e do prazo final.",
+    "limitacoes": ["Exemplo fictício de enriquecimento interpretativo."]
+  }
+}
